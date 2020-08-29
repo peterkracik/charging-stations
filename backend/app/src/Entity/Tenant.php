@@ -6,9 +6,17 @@ use App\Repository\TenantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=TenantRepository::class)
+ * @ApiResource(
+ *  itemOperations={
+ *         "get"
+ *  },
+ *  normalizationContext={"groups"={"tenant"}})
+ * )
  */
 class Tenant
 {
@@ -16,22 +24,30 @@ class Tenant
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"charging_station", "store", "tenant"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"charging_station", "store", "tenant"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Store::class, mappedBy="tenant")
+     * @Groups({"tenant"})
      */
     private $stores;
 
     public function __construct()
     {
         $this->stores = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 
     public function getId(): ?int
