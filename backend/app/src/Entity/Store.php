@@ -46,6 +46,11 @@ class Store
      */
     private $chargingStations;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Schedule::class, cascade={"persist"})
+     */
+    private $schedule;
+
     public function __construct()
     {
         $this->chargingStations = new ArrayCollection();
@@ -113,6 +118,18 @@ class Store
                 $chargingStation->setStore(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSchedule(): ?Schedule
+    {
+        return $this->schedule;
+    }
+
+    public function setSchedule(?Schedule $schedule): self
+    {
+        $this->schedule = $schedule;
 
         return $this;
     }

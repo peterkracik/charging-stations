@@ -40,6 +40,10 @@ class ChargingStation
      */
     private $store;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Schedule::class, cascade={"persist"})
+     */
+    private $schedule;
 
     public function __toString(): string
     {
@@ -72,6 +76,18 @@ class ChargingStation
     public function setStore(?Store $store): self
     {
         $this->store = $store;
+
+        return $this;
+    }
+
+    public function getSchedule(): ?Schedule
+    {
+        return $this->schedule;
+    }
+
+    public function setSchedule(?Schedule $schedule): self
+    {
+        $this->schedule = $schedule;
 
         return $this;
     }

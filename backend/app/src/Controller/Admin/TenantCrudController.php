@@ -2,10 +2,13 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\ScheduleField;
 use App\Entity\Tenant;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 
 class TenantCrudController extends AbstractCrudController
 {
@@ -17,8 +20,9 @@ class TenantCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
+            FormField::addPanel('Basic information'),
             IdField::new('id')->hideOnForm(),
-            TextField::new('name'),
+            TextField::new('name')
         ];
     }
 }

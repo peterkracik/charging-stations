@@ -97,4 +97,5 @@ class Tenant
 
         return $this;
     }
+
 }
