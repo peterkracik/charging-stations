@@ -2,46 +2,40 @@
 
 namespace App\Entity;
 
-use App\Repository\ChargingStationRepository;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiSubresource;
-use Symfony\Component\Serializer\Annotation\Groups;
+use App\Model\ScheduleInterface;
+use App\Services\OpeningHoursService;
+use DateTime;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity(repositoryClass=ChargingStationRepository::class)
- * @ApiResource(
- *  itemOperations={
- *         "get"
- *  },
- * normalizationContext={"groups"={"charging_station"}})
- * )
+ * @ORM\Entity
  */
-class ChargingStation
+class ChargingStation implements ScheduleInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"charging_station", "store"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"charging_station", "store"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity=Store::class, inversedBy="chargingStations")
-     * @ApiSubresource
-     * @Groups({"charging_station"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $store;
 
     /**
      * @ORM\ManyToOne(targetEntity=Schedule::class, cascade={"persist"})
+     *
      */
     private $schedule;
 
@@ -50,6 +44,63 @@ class ChargingStation
         return $this->getName();
     }
 
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\Groups({"list", "detail"})
+     */
+    public function isOpen(?DateTime $date = null): bool
+    {
+        $isOpen = OpeningHoursService::isOpen($this, $date);
+        return $isOpen;
+    }
+
+
+    /**
+     * @Serializer\VirtualProperty()
+     * @Serializer\Groups({"detail"})
+     */
+    public function getOpeningHours(): array
+    {
+        return [
+            "monday"    => $this->getOpeningHoursForMonday(),
+            "tuesday"   => $this->getOpeningHoursForTuesday(),
+            "wednesday" => $this->getOpeningHoursForWednesday(),
+            "thursday"  => $this->getOpeningHoursForThursday(),
+            "friday"    => $this->getOpeningHoursForFriday(),
+            "saturday"  => $this->getOpeningHoursForSaturday(),
+            "sunday"    => $this->getOpeningHoursForSunday(),
+        ];
+    }
+
+    public function getOpeningHoursForMonday()
+    {
+        return $this->getSchedule()->getOpeningHoursForMonday() ?? $this->store->getSchedule()->getOpeningHoursForMonday();
+    }
+    public function getOpeningHoursForTuesday()
+    {
+        return $this->getSchedule()->getOpeningHoursForTuesday() ?? $this->store->getSchedule()->getOpeningHoursForTuesday();
+    }
+    public function getOpeningHoursForWednesday()
+    {
+        return $this->getSchedule()->getOpeningHoursForWednesday() ?? $this->store->getSchedule()->getOpeningHoursForWednesday();
+    }
+    public function getOpeningHoursForThursday()
+    {
+        return $this->getSchedule()->getOpeningHoursForThursday() ?? $this->store->getSchedule()->getOpeningHoursForThursday();
+    }
+    public function getOpeningHoursForFriday()
+    {
+        return $this->getSchedule()->getOpeningHoursForFriday() ?? $this->store->getSchedule()->getOpeningHoursForFriday();
+    }
+    public function getOpeningHoursForSaturday()
+    {
+        return $this->getSchedule()->getOpeningHoursForSaturday() ?? $this->store->getSchedule()->getOpeningHoursForSaturday();
+    }
+    public function getOpeningHoursForSunday()
+    {
+        return $this->getSchedule()->getOpeningHoursForSunday() ?? $this->store->getSchedule()->getOpeningHoursForSunday();
+    }
 
     public function getId(): ?int
     {

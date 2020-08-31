@@ -16,37 +16,37 @@ class ScheduleType extends AbstractType
                 'data' => true,
             ])
             ->add('monday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openTuesday', null, [
                 'data' => true,
             ])
             ->add('tuesday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openWednesday', null, [
                 'data' => true,
             ])
             ->add('wednesday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openThursday', null, [
                 'data' => true,
             ])
             ->add('thursday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openFriday', null, [
                 'data' => true,
             ])
             ->add('friday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openSaturday', null, [
                 'data' => true,
             ])
             ->add('saturday', null, [
-                 'help' => 'To override store opening hours',
+                //  'help' => 'To override store opening hours',
             ])
             ->add('openSunday', null, [
                 'data' => true,

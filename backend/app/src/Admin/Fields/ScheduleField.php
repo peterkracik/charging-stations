@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\Field;
+namespace App\Admin\Fields;
 
 use App\Form\ScheduleType;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;

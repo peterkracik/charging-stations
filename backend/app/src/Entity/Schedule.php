@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\ScheduleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -86,6 +85,36 @@ class Schedule
      * @ORM\Column(type="boolean")
      */
     private $openSunday = true;
+
+
+    public function getOpeningHoursForMonday()
+    {
+        return (!$this->isOpenMonday()) ? $this->isOpenMonday() : $this->getMonday();
+    }
+    public function getOpeningHoursForTuesday()
+    {
+        return (!$this->isOpenTuesday()) ? $this->isOpenTuesday() : $this->getTuesday();
+    }
+    public function getOpeningHoursForWednesday()
+    {
+        return (!$this->isOpenWednesday()) ? $this->isOpenWednesday() : $this->getWednesday();
+    }
+    public function getOpeningHoursForThursday()
+    {
+        return (!$this->isOpenThursday()) ? $this->isOpenThursday() : $this->getThursday();
+    }
+    public function getOpeningHoursForFriday()
+    {
+        return (!$this->isOpenFriday()) ? $this->isOpenFriday() : $this->getFriday();
+    }
+    public function getOpeningHoursForSaturday()
+    {
+        return (!$this->isOpenSaturday()) ? $this->isOpenSaturday() : $this->getSaturday();
+    }
+    public function getOpeningHoursForSunday()
+    {
+        return (!$this->isOpenSunday()) ? $this->isOpenSunday() : $this->getSunday();
+    }
 
     public function getId(): ?int
     {
@@ -176,7 +205,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenMonday(): ?bool
+    public function isOpenMonday(): ?bool
     {
         return $this->openMonday;
     }
@@ -188,7 +217,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenTuesday(): ?bool
+    public function isOpenTuesday(): ?bool
     {
         return $this->openTuesday;
     }
@@ -200,7 +229,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenWednesday(): ?bool
+    public function isOpenWednesday(): ?bool
     {
         return $this->openWednesday;
     }
@@ -212,7 +241,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenThursday(): ?bool
+    public function isOpenThursday(): ?bool
     {
         return $this->openThursday;
     }
@@ -224,7 +253,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenFriday(): ?bool
+    public function isOpenFriday(): ?bool
     {
         return $this->openFriday;
     }
@@ -236,7 +265,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenSaturday(): ?bool
+    public function isOpenSaturday(): ?bool
     {
         return $this->openSaturday;
     }
@@ -248,7 +277,7 @@ class Schedule
         return $this;
     }
 
-    public function getOpenSunday(): ?bool
+    public function isOpenSunday(): ?bool
     {
         return $this->openSunday;
     }

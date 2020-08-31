@@ -2,52 +2,49 @@
 
 namespace App\Entity;
 
-use App\Repository\StoreRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Serializer\Annotation\Groups;
+use App\Model\ScheduleInterface;
+use App\Services\OpeningHoursService;
+use DateTime;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=StoreRepository::class)
- * @ApiResource(
- *  itemOperations={
- *         "get"
- *  },
- *  normalizationContext={"groups"={"store"}})
- * )
+ *
  */
-class Store
+class Store implements ScheduleInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"charging_station", "store", "tenant"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"charging_station", "store", "tenant"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity=Tenant::class, inversedBy="stores")
-     * @Groups({"charging_station", "store"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $tenant;
 
     /**
      * @ORM\OneToMany(targetEntity=ChargingStation::class, mappedBy="store")
-     * @Groups({"store"})
+     * @Serializer\Groups({"detail"})
      */
     private $chargingStations;
 
     /**
      * @ORM\ManyToOne(targetEntity=Schedule::class, cascade={"persist"})
+     *
      */
     private $schedule;
 
@@ -59,6 +56,62 @@ class Store
     public function __toString(): string
     {
         return $this->getName();
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     * @Serializer\Groups({"list", "detail"})
+     */
+    public function isOpen(?DateTime $date = null): bool
+    {
+        $isOpen = OpeningHoursService::isOpen($this, $date);
+        return $isOpen;
+    }
+
+    /**
+     * @Serializer\VirtualProperty
+     * @Serializer\Groups({"detail"})
+     */
+    public function getOpeningHours(): array
+    {
+        return [
+            "monday"    => $this->getOpeningHoursForMonday() ?? false,
+            "tuesday"   => $this->getOpeningHoursForTuesday() ?? false,
+            "wednesday" => $this->getOpeningHoursForWednesday() ?? false,
+            "thursday"  => $this->getOpeningHoursForThursday() ?? false,
+            "friday"    => $this->getOpeningHoursForFriday() ?? false,
+            "saturday"  => $this->getOpeningHoursForSaturday() ?? false,
+            "sunday"    => $this->getOpeningHoursForSunday() ?? false,
+        ];
+    }
+
+    public function getOpeningHoursForMonday()
+    {
+        return $this->getSchedule()->getOpeningHoursForMonday();
+    }
+    public function getOpeningHoursForTuesday()
+    {
+        return $this->getSchedule()->getOpeningHoursForTuesday();
+    }
+    public function getOpeningHoursForWednesday()
+    {
+        return $this->getSchedule()->getOpeningHoursForWednesday();
+    }
+    public function getOpeningHoursForThursday()
+    {
+        return $this->getSchedule()->getOpeningHoursForThursday();
+    }
+    public function getOpeningHoursForFriday()
+    {
+        return $this->getSchedule()->getOpeningHoursForFriday();
+    }
+    public function getOpeningHoursForSaturday()
+    {
+        return $this->getSchedule()->getOpeningHoursForSaturday();
+    }
+    public function getOpeningHoursForSunday()
+    {
+        return $this->getSchedule()->getOpeningHoursForSunday();
     }
 
 
