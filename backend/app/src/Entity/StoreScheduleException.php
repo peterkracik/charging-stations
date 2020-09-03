@@ -6,7 +6,7 @@ use App\Model\ClientInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\StoreScheduleExceptionRepository")
  *
  */
 class StoreScheduleException extends ScheduleException

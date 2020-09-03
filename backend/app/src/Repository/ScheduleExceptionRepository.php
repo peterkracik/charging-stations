@@ -2,7 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\ChargingStation;
 use App\Entity\ScheduleException;
+use App\Entity\Store;
+use App\Entity\Tenant;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,33 +21,5 @@ class ScheduleExceptionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ScheduleException::class);
-    }
-
-    // /**
-    //  * @return ScheduleException[] Returns an array of ScheduleException objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-
-    public function findOneBySomeField($value): ?ScheduleException
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
     }
 }

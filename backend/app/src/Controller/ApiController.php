@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\ChargingStation;
 use App\Services\ChargingStationService;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,8 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ApiController extends AbstractController
 {
-    private $em;
-
     private $serializer;
 
     /**
@@ -25,11 +22,9 @@ class ApiController extends AbstractController
     private $chargingStationService;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
         ChargingStationService $chargingStationService
     ) {
-        $this->em = $entityManager;
         $this->serializer = $serializer;
         $this->chargingStationService = $chargingStationService;
     }

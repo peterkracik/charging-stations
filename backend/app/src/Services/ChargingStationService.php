@@ -13,10 +13,18 @@ class ChargingStationService
      */
     private $openingHoursService;
 
+    /**
+     * @var ScheduleExceptionService
+     */
+    private $scheduleExceptionService;
+
+
     public function __construct(
-        OpeningHoursService $openingHoursService
+        OpeningHoursService $openingHoursService,
+        ScheduleExceptionService $scheduleExceptionService
     ) {
         $this->openingHoursService = $openingHoursService;
+        $this->scheduleExceptionService = $scheduleExceptionService;
     }
 
     /**
@@ -25,7 +33,14 @@ class ChargingStationService
      */
     public function isOpen(ChargingStation $station, DateTime $date): bool
     {
-        return $this->openingHoursService->isOpen($station, $date);
+        $exception = $this->scheduleExceptionService->getStationExceptionByDate($station, $date); // get exception for the object
+
+        // exception has priority over the main schedule
+        if ($exception) {
+            return $exception->isOpen();
+        }
+
+        return $this->openingHoursService->isOpen($station, $date); // if not exception, return value based on main schedule
     }
 
 }

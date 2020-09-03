@@ -77,7 +77,7 @@ abstract class ScheduleException implements ScheduleExceptionInterface
         return $this;
     }
 
-    public function getOpen(): ?bool
+    public function isOpen(): ?bool
     {
         return $this->open;
     }

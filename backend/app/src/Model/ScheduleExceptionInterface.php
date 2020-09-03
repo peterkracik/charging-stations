@@ -16,7 +16,7 @@ interface ScheduleExceptionInterface
 
     public function setEnd(\DateTimeInterface $end): self;
 
-    public function getOpen(): ?bool;
+    public function isOpen(): ?bool;
 
     public function setOpen(bool $open): self;
 
