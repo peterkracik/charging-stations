@@ -82,4 +82,25 @@ class ApiController extends AbstractController
 
         return new JsonResponse($json, 200, [], true);
     }
+
+    /**
+     * @Route("/stations/{id}/status_change", name="charging_station_status_change", methods={"GET"})
+     */
+    public function getStationNextStatusChange(Request $request, ChargingStation $station)
+    {
+        $body = json_decode($request->getContent(), true); // get body of the api request
+        $date = new DateTime($body['date'] ?? null);       // create date object
+        $changeDate = $this->chargingStationService->statusChange($station, $date);      // verify if station is open
+
+        $data = [
+            "date" => $changeDate->format('c')
+        ];
+
+        $json = $this->serializer->serialize(
+            $data,
+            'json',
+        );
+
+        return new JsonResponse($json, 200, [], true);
+    }
 }

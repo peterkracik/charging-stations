@@ -31,7 +31,8 @@ class TenantCrudController extends AbstractCrudController
                 ->setEntryType(TenantScheduleExceptionType::class)
                 ->setFormTypeOptions([
                     'by_reference' => false
-                ]),
+                ])
+                ->onlyOnForms(),
         ];
     }
 }

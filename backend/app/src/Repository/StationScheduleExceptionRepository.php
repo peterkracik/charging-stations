@@ -34,4 +34,22 @@ class StationScheduleExceptionRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * get exception for the charging station
+     * @var ChargingStation $station
+     * @var DateTime $date
+     */
+    public function findNextByDate(ChargingStation $client, DateTime $date): ?StationScheduleException
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.client = :id')
+            ->andwhere('(:date < e.end AND :date >= e.start) OR (:date < e.start AND :date < e.end)')
+            ->setParameter('id', $client->getId())
+            ->setParameter('date', $date)
+            ->orderBy('e.start')
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
 }

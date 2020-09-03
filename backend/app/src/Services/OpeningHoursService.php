@@ -16,8 +16,31 @@ class OpeningHoursService
     public function isOpen(HasScheduleInterface $obj, ?DateTime $date): bool
     {
         $date = $date ?? new DateTime();    // if null, use the current date
-        $day = $date->format('w');          // get the day from date object
 
+        $timeItems = $this->getOpeningHoursForDay($obj, $date); // get string format of opening hours for day
+
+        if (!$timeItems) return false;  // return false if it closed
+        $currentTimestamp = intval($date->format("U")); // convert to int timestamp
+
+        // foreach time in records compare if the current time is uncluded
+        foreach($timeItems as $item) {
+
+            // compare with the time fork
+            if ($currentTimestamp >= strtotime($item['from'], $currentTimestamp) && $currentTimestamp <= strtotime($item['to'], $currentTimestamp)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * get schedule by day
+     *
+     */
+    private function getOpeningHoursForDay(HasScheduleInterface $obj, DateTime $date): ?array
+    {
+        $day = $date->format('w');          // get the day from date object
         switch ($day) {
             case 0:
                 $openingHours = $obj->getOpeningHoursForSunday();
@@ -40,23 +63,12 @@ class OpeningHoursService
             case 6:
                 $openingHours = $obj->getOpeningHoursForSaturday();
                 break;
+            default:
+                $openingHours = null;
         }
 
         $timeItems = $this->getScheduleDay($openingHours); // get times for the current day
-
-        if (!$timeItems) return false;  // return false if it closed
-        $currentTimestamp = intval($date->format("U")); // convert to int timestamp
-
-        // foreach time in records compare if the current time is uncluded
-        foreach($timeItems as $item) {
-
-            // compare with the time fork
-            if ($currentTimestamp >= strtotime($item['from'], $currentTimestamp) && $currentTimestamp <= strtotime($item['to'], $currentTimestamp)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $timeItems;
     }
 
     /**
@@ -77,6 +89,31 @@ class OpeningHoursService
             ];
         }, $times);
         return $times;
+    }
+
+    /**
+     * get following change in the schedule
+     */
+    public function getNextChangeInSchedule(HasScheduleInterface $obj, ?DateTime $date): ?DateTime
+    {
+        $openingHours = $this->getOpeningHoursForDay($obj, $date); // get array of opening hours per day
+        $currentTimestamp = intval($date->format("U")); // convert to int timestamp
+        foreach($openingHours as $item) {
+            // case when closing soon (but already open)
+            if ($currentTimestamp >= strtotime($item['from'], $currentTimestamp) && $currentTimestamp < strtotime($item['to'], $currentTimestamp))
+                return (new DateTime())->setTimestamp(strtotime($item['to'], $currentTimestamp)); // return "to" as datetime
+
+            // case when not open yet
+            if ($currentTimestamp < strtotime($item['from'], $currentTimestamp))
+                return (new DateTime())->setTimestamp(strtotime($item['from'], $currentTimestamp)); // return "to" as datetime
+        }
+
+        // if not found, call method recursively with date + 1 day
+        $nextDay = clone $date;
+        $nextDay->modify("+1 day"); // modify day to following day
+        $nextDay->format('Y-m-d');
+        $nextDay = new \DateTime($date->format('Y-m-d')); // to remove time => set to 00:00
+        return $this->getNextChangeInSchedule($obj, $nextDay);
     }
 
 }

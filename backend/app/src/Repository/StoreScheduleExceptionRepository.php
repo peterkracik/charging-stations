@@ -33,4 +33,21 @@ class StoreScheduleExceptionRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    /**
+     * get exception for the charging station
+     * @var StoreScheduleException $station
+     * @var DateTime $date
+     */
+    public function findNextByDate(Store $client, DateTime $date): ?StoreScheduleException
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.client = :id')
+            ->andwhere('(:date < e.end AND :date >= e.start) OR (:date < e.start AND :date < e.end)')
+            ->setParameter('id', $client->getId())
+            ->setParameter('date', $date)
+            ->orderBy('e.start')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

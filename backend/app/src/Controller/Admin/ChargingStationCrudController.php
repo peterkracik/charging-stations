@@ -37,7 +37,8 @@ class ChargingStationCrudController extends AbstractCrudController
                 ->setEntryType(StationScheduleExceptionType::class)
                 ->setFormTypeOptions([
                     'by_reference' => false
-                ]),
+                ])
+                ->onlyOnForms(),
         ];
     }
 }

@@ -37,7 +37,8 @@ class StoreCrudController extends AbstractCrudController
                 ->setEntryType(StoreScheduleExceptionType::class)
                 ->setFormTypeOptions([
                     'by_reference' => false
-                ]),
+                ])
+                ->onlyOnForms(),
         ];
     }
 }
