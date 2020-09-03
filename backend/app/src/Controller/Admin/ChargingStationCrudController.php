@@ -2,13 +2,15 @@
 
 namespace App\Controller\Admin;
 
-use App\Admin\Field\ScheduleField;
+use App\Admin\Fields\ScheduleField;
 use App\Entity\ChargingStation;
+use App\Form\StationScheduleExceptionType;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 
 class ChargingStationCrudController extends AbstractCrudController
 {
@@ -27,6 +29,15 @@ class ChargingStationCrudController extends AbstractCrudController
             FormField::addPanel('Opening hours'),
             ScheduleField::new('schedule')
                 ->onlyOnForms(),
+            FormField::addPanel('Exceptions'),
+            CollectionField::new('scheduleExceptions')
+                ->allowAdd()
+                ->allowDelete()
+                ->setEntryIsComplex(true)
+                ->setEntryType(StationScheduleExceptionType::class)
+                ->setFormTypeOptions([
+                    'by_reference' => false
+                ]),
         ];
     }
 }

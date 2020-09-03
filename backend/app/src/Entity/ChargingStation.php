@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
+use App\Model\ClientInterface;
+use App\Model\HasScheduleExceptionInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Model\ScheduleInterface;
-use App\Services\OpeningHoursService;
-use DateTime;
+use App\Model\HasScheduleInterface;
+use App\Model\ScheduleExceptionInterface;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity
  */
-class ChargingStation implements ScheduleInterface
+class ChargingStation implements ClientInterface, HasScheduleInterface, HasScheduleExceptionInterface
 {
     /**
      * @ORM\Id
@@ -28,7 +31,7 @@ class ChargingStation implements ScheduleInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Store::class, inversedBy="chargingStations")
+     * @ORM\ManyToOne(targetEntity=Store::class, inversedBy="chargingStations", cascade={"persist"})
      * @Serializer\Groups({"list", "detail"})
      */
     private $store;
@@ -39,22 +42,20 @@ class ChargingStation implements ScheduleInterface
      */
     private $schedule;
 
+    /**
+     * @ORM\OneToMany(targetEntity=StationScheduleException::class, mappedBy="station", cascade={"persist", "remove"})
+     */
+    private $scheduleExceptions;
+
+    public function __construct()
+    {
+        $this->scheduleExceptions = new ArrayCollection();
+    }
+
     public function __toString(): string
     {
         return $this->getName();
     }
-
-
-    /**
-     * @Serializer\VirtualProperty()
-     * @Serializer\Groups({"list", "detail"})
-     */
-    public function isOpen(?DateTime $date = null): bool
-    {
-        $isOpen = OpeningHoursService::isOpen($this, $date);
-        return $isOpen;
-    }
-
 
     /**
      * @Serializer\VirtualProperty()
@@ -139,6 +140,37 @@ class ChargingStation implements ScheduleInterface
     public function setSchedule(?Schedule $schedule): self
     {
         $this->schedule = $schedule;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ScheduleException[]
+     */
+    public function getScheduleExceptions(): Collection
+    {
+        return $this->scheduleExceptions;
+    }
+
+    public function addScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if (!$this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions[] = $scheduleException;
+            $scheduleException->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if ($this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions->removeElement($scheduleException);
+            // set the owning side to null (unless already changed)
+            if ($scheduleException->getClient() === $this) {
+                $scheduleException->setClient(null);
+            }
+        }
 
         return $this;
     }

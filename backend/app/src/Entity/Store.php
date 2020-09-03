@@ -2,19 +2,20 @@
 
 namespace App\Entity;
 
+use App\Model\ClientInterface;
+use App\Model\HasScheduleExceptionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Model\ScheduleInterface;
-use App\Services\OpeningHoursService;
-use DateTime;
+use App\Model\HasScheduleInterface;
+use App\Model\ScheduleExceptionInterface;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity(repositoryClass=StoreRepository::class)
+ * @ORM\Entity
  *
  */
-class Store implements ScheduleInterface
+class Store implements ClientInterface, HasScheduleInterface, HasScheduleExceptionInterface
 {
     /**
      * @ORM\Id
@@ -31,13 +32,13 @@ class Store implements ScheduleInterface
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Tenant::class, inversedBy="stores")
+     * @ORM\ManyToOne(targetEntity=Tenant::class, inversedBy="stores", cascade={"persist", "remove"})
      * @Serializer\Groups({"list", "detail"})
      */
     private $tenant;
 
     /**
-     * @ORM\OneToMany(targetEntity=ChargingStation::class, mappedBy="store")
+     * @ORM\OneToMany(targetEntity=ChargingStation::class, mappedBy="store", cascade={"persist", "remove"})
      * @Serializer\Groups({"detail"})
      */
     private $chargingStations;
@@ -48,24 +49,20 @@ class Store implements ScheduleInterface
      */
     private $schedule;
 
+    /**
+     * @ORM\OneToMany(targetEntity=StoreScheduleException::class, mappedBy="store", cascade={"persist", "remove"})
+     */
+    private $scheduleExceptions;
+
     public function __construct()
     {
         $this->chargingStations = new ArrayCollection();
+        $this->scheduleExceptions = new ArrayCollection();
     }
 
     public function __toString(): string
     {
         return $this->getName();
-    }
-
-    /**
-     * @Serializer\VirtualProperty
-     * @Serializer\Groups({"list", "detail"})
-     */
-    public function isOpen(?DateTime $date = null): bool
-    {
-        $isOpen = OpeningHoursService::isOpen($this, $date);
-        return $isOpen;
     }
 
     /**
@@ -183,6 +180,37 @@ class Store implements ScheduleInterface
     public function setSchedule(?Schedule $schedule): self
     {
         $this->schedule = $schedule;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|StoreScheduleException[]
+     */
+    public function getScheduleExceptions(): Collection
+    {
+        return $this->scheduleExceptions;
+    }
+
+    public function addScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if (!$this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions[] = $scheduleException;
+            $scheduleException->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if ($this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions->removeElement($scheduleException);
+            // set the owning side to null (unless already changed)
+            if ($scheduleException->getClient() === $this) {
+                $scheduleException->setClient(null);
+            }
+        }
 
         return $this;
     }

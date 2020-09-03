@@ -2,12 +2,12 @@
 
 namespace App\Controller\Admin;
 
-use App\Admin\Field\ScheduleField;
 use App\Entity\Tenant;
+use App\Form\TenantScheduleExceptionType;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 
 class TenantCrudController extends AbstractCrudController
@@ -22,7 +22,16 @@ class TenantCrudController extends AbstractCrudController
         return [
             FormField::addPanel('Basic information'),
             IdField::new('id')->hideOnForm(),
-            TextField::new('name')
+            TextField::new('name'),
+            FormField::addPanel('Exceptions'),
+            CollectionField::new('scheduleExceptions')
+            ->allowAdd()
+                ->allowDelete()
+                ->setEntryIsComplex(true)
+                ->setEntryType(TenantScheduleExceptionType::class)
+                ->setFormTypeOptions([
+                    'by_reference' => false
+                ]),
         ];
     }
 }

@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
+use App\Model\ClientInterface;
+use App\Model\HasScheduleExceptionInterface;
+use App\Model\ScheduleExceptionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=TenantRepository::class)
+ * @ORM\Entity
  */
-class Tenant
+class Tenant implements ClientInterface, HasScheduleExceptionInterface
 {
     /**
      * @ORM\Id
@@ -24,13 +27,19 @@ class Tenant
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Store::class, mappedBy="tenant")
+     * @ORM\OneToMany(targetEntity=Store::class, mappedBy="tenant", cascade={"persist", "remove"})
      */
     private $stores;
+
+    /**
+     * @ORM\OneToMany(targetEntity=TenantScheduleException::class, mappedBy="tenant", cascade={"persist", "remove"})
+     */
+    private $scheduleExceptions;
 
     public function __construct()
     {
         $this->stores = new ArrayCollection();
+        $this->scheduleExceptions = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -80,6 +89,37 @@ class Tenant
             // set the owning side to null (unless already changed)
             if ($store->getTenant() === $this) {
                 $store->setTenant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|TenantScheduleException[]
+     */
+    public function getScheduleExceptions(): Collection
+    {
+        return $this->scheduleExceptions;
+    }
+
+    public function addScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if (!$this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions[] = $scheduleException;
+            $scheduleException->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScheduleException(ScheduleExceptionInterface $scheduleException): self
+    {
+        if ($this->scheduleExceptions->contains($scheduleException)) {
+            $this->scheduleExceptions->removeElement($scheduleException);
+            // set the owning side to null (unless already changed)
+            if ($scheduleException->getClient() === $this) {
+                $scheduleException->setClient(null);
             }
         }
 

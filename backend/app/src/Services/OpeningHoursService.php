@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Model\ScheduleInterface;
+use App\Model\HasScheduleInterface;
 use DateTime;
 
 class OpeningHoursService
@@ -13,7 +13,7 @@ class OpeningHoursService
      * @param ScheduleInterface $obj    store / charging station
      * @param DateTime|null $date
      */
-    public static function isOpen(ScheduleInterface $obj, ?DateTime $date)
+    public function isOpen(HasScheduleInterface $obj, ?DateTime $date): bool
     {
         $date = $date ?? new DateTime();    // if null, use the current date
         $day = $date->format('w');          // get the day from date object
@@ -42,8 +42,7 @@ class OpeningHoursService
                 break;
         }
 
-        // var_dump($openingHours);
-        $timeItems = self::getScheduleDay($openingHours); // get times for the current day
+        $timeItems = $this->getScheduleDay($openingHours); // get times for the current day
 
         if (!$timeItems) return false;  // return false if it closed
         $currentTimestamp = intval($date->format("U")); // convert to int timestamp
@@ -64,7 +63,7 @@ class OpeningHoursService
      * convert record to array of times from/to
      * @param ?string   $schedule       opening hours in text format
      */
-    public static function getScheduleDay(?string $schedule)
+    public function getScheduleDay(?string $schedule): array
     {
         // if empty, store/station is closed
         if (!$schedule) return false;

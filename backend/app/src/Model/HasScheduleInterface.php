@@ -3,10 +3,8 @@
 
 namespace App\Model;
 
-interface ScheduleInterface
+interface HasScheduleInterface
 {
-    public function isOpen(): bool;
-
     public function getOpeningHours(): array;
 
     public function getOpeningHoursForMonday();
