@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
  *      "store"     = "StoreScheduleException",
  *      "tenant"    = "TenantScheduleException",
  * })
-
  */
 abstract class ScheduleException implements ScheduleExceptionInterface
 {
@@ -41,6 +40,11 @@ abstract class ScheduleException implements ScheduleExceptionInterface
      * @ORM\Column(type="boolean")
      */
     private $open;
+
+    /**
+     * @var CLientInterface
+     */
+    public $client;
 
     public function __toString()
     {
@@ -89,4 +93,14 @@ abstract class ScheduleException implements ScheduleExceptionInterface
         return $this;
     }
 
+    public function getClient(): ?ClientInterface
+    {
+        return $this->client;
+    }
+
+    public function setClient(?ClientInterface $client): self
+    {
+        $this->client = $client;
+        return $this;
+    }
 }

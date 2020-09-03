@@ -5,15 +5,12 @@ namespace App\Repository;
 use App\Entity\StoreScheduleException;
 use App\Entity\Store;
 use DateTime;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method ScheduleException|null find($id, $lockMode = null, $lockVersion = null)
- * @method ScheduleException|null findOneBy(array $criteria, array $orderBy = null)
- * @method ScheduleException[]    findAll()
- * @method ScheduleException[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class StoreScheduleExceptionRepository extends ScheduleExceptionRepository
+class StoreScheduleExceptionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -25,12 +22,12 @@ class StoreScheduleExceptionRepository extends ScheduleExceptionRepository
      * @var Store $station
      * @var DateTime $date
      */
-    public function findOneForStoreByDate(Store $station, DateTime $date): ?StoreScheduleException
+    public function findOneByDate(Store $client, DateTime $date): ?StoreScheduleException
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.store_id = :id')
+            ->andWhere('e.client = :id')
             ->andwhere(':date BETWEEN e.start AND e.end')
-            ->setParameter('id', $station->getId())
+            ->setParameter('id', $client->getId())
             ->setParameter('date', $date)
             ->getQuery()
             ->getOneOrNullResult()

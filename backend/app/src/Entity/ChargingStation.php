@@ -43,7 +43,7 @@ class ChargingStation implements ClientInterface, HasScheduleInterface, HasSched
     private $schedule;
 
     /**
-     * @ORM\OneToMany(targetEntity=StationScheduleException::class, mappedBy="station", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=StationScheduleException::class, mappedBy="client", cascade={"persist", "remove"})
      */
     private $scheduleExceptions;
 

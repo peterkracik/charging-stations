@@ -32,7 +32,7 @@ class Tenant implements ClientInterface, HasScheduleExceptionInterface
     private $stores;
 
     /**
-     * @ORM\OneToMany(targetEntity=TenantScheduleException::class, mappedBy="tenant", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=TenantScheduleException::class, mappedBy="client", cascade={"persist", "remove"})
      */
     private $scheduleExceptions;
 

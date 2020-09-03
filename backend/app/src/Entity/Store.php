@@ -50,7 +50,7 @@ class Store implements ClientInterface, HasScheduleInterface, HasScheduleExcepti
     private $schedule;
 
     /**
-     * @ORM\OneToMany(targetEntity=StoreScheduleException::class, mappedBy="store", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=StoreScheduleException::class, mappedBy="client", cascade={"persist", "remove"})
      */
     private $scheduleExceptions;
 

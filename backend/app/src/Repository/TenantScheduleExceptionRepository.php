@@ -3,18 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\TenantScheduleException;
-use App\Entity\Store;
 use App\Entity\Tenant;
 use DateTime;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method ScheduleException|null find($id, $lockMode = null, $lockVersion = null)
- * @method ScheduleException|null findOneBy(array $criteria, array $orderBy = null)
- * @method ScheduleException[]    findAll()
- * @method ScheduleException[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TenantScheduleExceptionRepository extends ScheduleExceptionRepository
+class TenantScheduleExceptionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -26,12 +22,12 @@ class TenantScheduleExceptionRepository extends ScheduleExceptionRepository
      * @var Tenant $station
      * @var DateTime $date
      */
-    public function findOneForTenantByDate(Tenant $station, DateTime $date): ?TenantScheduleException
+    public function findOneByDate(Tenant $client, DateTime $date): ?TenantScheduleException
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.tenant_id = :id')
+            ->andWhere('e.client = :id')
             ->andwhere(':date BETWEEN e.start AND e.end')
-            ->setParameter('id', $station->getId())
+            ->setParameter('id', $client->getId())
             ->setParameter('date', $date)
             ->getQuery()
             ->getOneOrNullResult()

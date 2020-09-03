@@ -34,7 +34,7 @@ class ScheduleExceptionService
         $date = $date ?? new DateTime();
 
         $this->repository = $this->entityManager->getRepository(StationScheduleException::class);
-        $exception = $this->repository->findOneForStationByDate($station, $date);
+        $exception = $this->repository->findOneByDate($station, $date);
 
         if ($exception)
             return $exception;
@@ -50,7 +50,7 @@ class ScheduleExceptionService
         $date = $date ?? new DateTime();
 
         $this->repository = $this->entityManager->getRepository(StoreScheduleException::class);
-        $exception = $this->repository->findOneForStationByDate($store, $date);
+        $exception = $this->repository->findOneByDate($store, $date);
         if ($exception)
             return $exception;
 
@@ -65,7 +65,7 @@ class ScheduleExceptionService
         $date = $date ?? new DateTime();
 
         $this->repository = $this->entityManager->getRepository(TenantScheduleException::class);
-        $exception = $this->repository->findOneForStationByDate($tenant, $date);
+        $exception = $this->repository->findOneByDate($tenant, $date);
         return $exception;
     }
 
