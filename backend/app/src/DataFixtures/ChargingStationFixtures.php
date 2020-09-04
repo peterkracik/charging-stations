@@ -161,7 +161,7 @@ class ChargingStationFixtures extends Fixture
          * charging stations for store 4
          */
         $station7 = new ChargingStation();
-        $station7->setName("Lidl Radstadt - Charging station for clients");
+        $station7->setName("Kaufland Radstadt - Charging station for clients");
         $station7->setStore($store4);
         $schedule = new Schedule();
         $schedule->setOpenWednesday(false);
@@ -171,7 +171,7 @@ class ChargingStationFixtures extends Fixture
         $manager->persist($station7);
 
         $station8 = new ChargingStation();
-        $station8->setName("Lidl Radstadt - Charging station for employees");
+        $station8->setName("Kaufland Radstadt - Charging station for employees");
         $station8->setStore($store4);
         $schedule = new Schedule();
         $schedule->setMonday('06:00-22:00');
