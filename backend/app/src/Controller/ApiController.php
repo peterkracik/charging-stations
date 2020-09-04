@@ -90,10 +90,10 @@ class ApiController extends AbstractController
     {
         $body = json_decode($request->getContent(), true); // get body of the api request
         $date = new DateTime($body['date'] ?? null);       // create date object
-        $changeDate = $this->chargingStationService->statusChange($station, $date);      // verify if station is open
+        $changeDate = $this->chargingStationService->searchStatusChange($station, $date);      // verify if station is open
 
         $data = [
-            "date" => $changeDate->format('c')
+            "date" => $changeDate->format('c'),
         ];
 
         $json = $this->serializer->serialize(

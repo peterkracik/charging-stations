@@ -39,16 +39,16 @@ class StationScheduleExceptionRepository extends ServiceEntityRepository
      * @var ChargingStation $station
      * @var DateTime $date
      */
-    public function findNextByDate(ChargingStation $client, DateTime $date): ?StationScheduleException
+    public function findAllByDate(ChargingStation $client, DateTime $dateFrom, DateTime $dateTo): ?array
     {
         return $this->createQueryBuilder('e')
             ->andWhere('e.client = :id')
-            ->andwhere('(:date < e.end AND :date >= e.start) OR (:date < e.start AND :date < e.end)')
+            ->andwhere(':dateFrom < e.end AND :dateTo > e.start')
             ->setParameter('id', $client->getId())
-            ->setParameter('date', $date)
-            ->orderBy('e.start')
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
     }
 

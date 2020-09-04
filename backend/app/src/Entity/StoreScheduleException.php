@@ -17,4 +17,5 @@ class StoreScheduleException extends ScheduleException
      */
     public $client;
 
+    protected $priority = 3;
 }

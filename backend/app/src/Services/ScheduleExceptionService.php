@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Entity\ChargingStation;
-use App\Entity\StationScheduleException;
 use App\Entity\Store;
-use App\Entity\StoreScheduleException;
 use App\Entity\Tenant;
+use App\Entity\Timespan;
+use App\Entity\StationScheduleException;
+use App\Entity\StoreScheduleException;
 use App\Entity\TenantScheduleException;
 use App\Model\ScheduleExceptionInterface;
 use DateTime;
@@ -70,58 +71,44 @@ class ScheduleExceptionService
     }
 
     /**
-     * find next exception
+     * find all exceptions for time range
      */
-    public function getNextStationException(ChargingStation $station, ?DateTime $date): ?ScheduleExceptionInterface
+    public function findAllStationExceptionsByDate(ChargingStation $station, DateTime $dateFrom, DateTime $dateTo): array
     {
-        $date = $date ?? new DateTime();
-
         $repository = $this->entityManager->getRepository(StationScheduleException::class);
-        $stationException = $repository->findNextByDate($station, $date); // get next exception for charging station
-        $storeException = $this->getNextStoreException($station->getStore(), $date); // get next exception for store
-        return self::compareExceptions($date, $stationException, $storeException); // return the smallest one
+        $stationExceptions = $repository->findAllByDate($station, $dateFrom, $dateTo); // get next exception for charging station
+
+        // merge exceptions with parent object exceptions
+        $storeExceptions = $this->findAllStoreExceptionsByDate($station->getStore(), $dateFrom, $dateTo);
+        $exceptions = array_merge($stationExceptions, $storeExceptions);
+
+        return $exceptions ?? [];
     }
 
     /**
-     * find next exception
+     * find all exceptions for time range
      */
-    public function getNextStoreException(Store $store, ?DateTime $date): ?ScheduleExceptionInterface
+    public function findAllStoreExceptionsByDate(Store $store, DateTime $dateFrom, DateTime $dateTo): array
     {
-        $date = $date ?? new DateTime();
-
         $repository = $this->entityManager->getRepository(StoreScheduleException::class);
-        $storeException = $repository->findNextByDate($store, $date);
-        $tenantException = $this->getNextTenantException($store->getTenant(), $date);
+        $storeExceptions = $repository->findAllByDate($store, $dateFrom, $dateTo); // get next exception for charging store
 
-        return self::compareExceptions($date, $storeException, $tenantException); // return the smallest one
+        // merge exceptions with parent object exceptions
+        $tenantExceptions = $this->findAllTenantExceptionsByDate($store->getTenant(), $dateFrom, $dateTo);
+        $exceptions = array_merge($tenantExceptions, $storeExceptions);
+
+        return $exceptions ?? [];
     }
 
     /**
-     * find next exception for tennt
+     * find all exceptions for time range
      */
-    public function getNextTenantException(Tenant $tenant, ?DateTime $date): ?ScheduleExceptionInterface
+    public function findAllTenantExceptionsByDate(Tenant $tenant, DateTime $dateFrom, DateTime $dateTo): array
     {
-        $date = $date ?? new DateTime();
-
         $repository = $this->entityManager->getRepository(TenantScheduleException::class);
-        $exception = $repository->findNextByDate($tenant, $date);
-        return $exception;
+        $tenantExceptions = $repository->findAllByDate($tenant, $dateFrom, $dateTo); // get next exception for charging tenant
+
+        return $tenantExceptions ?? [];
     }
 
-    /**
-     * returns scheduledexception which is closed to change the status (open -> close, close -> open)
-     */
-    private static function compareExceptions(DateTime $date, ?ScheduleExceptionInterface $exception1, ?ScheduleExceptionInterface $exception2): ?ScheduleExceptionInterface
-    {
-        if (!$exception1) return $exception2; // early return
-        if (!$exception2) return $exception1; // early return
-
-        // get pivot dates
-        $comp_date_1 = ($date < $exception1->getStart()) ? $exception1->getStart() : $exception1->getEnd(); // get start if not alrady started, else end
-        $comp_date_2 = ($date < $exception2->getStart()) ? $exception2->getStart() : $exception2->getEnd(); // get start if not alrady started, else end
-
-        // returns the smaller one
-        return ($comp_date_1 < $comp_date_2) ? $exception1 : $exception2;
-
-    }
 }

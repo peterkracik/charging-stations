@@ -36,18 +36,18 @@ class StoreScheduleExceptionRepository extends ServiceEntityRepository
 
     /**
      * get exception for the charging station
-     * @var StoreScheduleException $station
+     * @var Store $station
      * @var DateTime $date
      */
-    public function findNextByDate(Store $client, DateTime $date): ?StoreScheduleException
+    public function findAllByDate(Store $client, DateTime $dateFrom, DateTime $dateTo): ?array
     {
         return $this->createQueryBuilder('e')
             ->andWhere('e.client = :id')
-            ->andwhere('(:date < e.end AND :date >= e.start) OR (:date < e.start AND :date < e.end)')
+            ->andwhere(':dateFrom < e.end AND :dateTo > e.start')
             ->setParameter('id', $client->getId())
-            ->setParameter('date', $date)
-            ->orderBy('e.start')
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getResult();
     }
 }

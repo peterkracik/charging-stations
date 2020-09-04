@@ -16,4 +16,6 @@ class TenantScheduleException extends ScheduleException
      * @ORM\ManyToOne(targetEntity=tenant::class, inversedBy="scheduleExceptions", cascade={"persist", "remove"})
      */
     public $client;
+
+    protected $priority = 4;
 }

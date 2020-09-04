@@ -29,4 +29,8 @@ interface ScheduleExceptionInterface
      * set related objects
      */
     public function setClient(?ClientInterface $client): self;
+
+    public function getPriority(): int;
+
+    public function setPriority(int $priority): self;
 }

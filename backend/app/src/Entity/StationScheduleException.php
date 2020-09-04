@@ -17,4 +17,5 @@ class StationScheduleException extends ScheduleException
      */
     public $client;
 
+    protected $priority = 2;
 }

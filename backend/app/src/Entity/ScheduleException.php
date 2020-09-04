@@ -46,6 +46,17 @@ abstract class ScheduleException implements ScheduleExceptionInterface
      */
     public $client;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @var int
+     */
+    protected $priority = 1;
+
+    public function __construct()
+    {
+        $this->setPriority($this->priority);
+    }
+
     public function __toString()
     {
         return $this->getStart()->format('Y-m-d H:m') . " - " . $this->getEnd()->format('Y-m-d H:m') ?? '';
@@ -101,6 +112,17 @@ abstract class ScheduleException implements ScheduleExceptionInterface
     public function setClient(?ClientInterface $client): self
     {
         $this->client = $client;
+        return $this;
+    }
+
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(int $priority): self
+    {
+        $this->priority = $priority;
         return $this;
     }
 }
