@@ -29,11 +29,11 @@ ADD ./app /var/www
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# load fixuteres
-RUN bin/console doctrine:fixtures:load -q
+RUN mkdir -p /var/www/var/cache && \
+    mkdir -p /var/www/var/log && \
+    composer install && \
+    bin/console assets:install && \
+    chmod -R 777 /var/www/var/
 
-# RUN mkdir -p /var/www/var/cache && \
-#     mkdir -p /var/www/var/log && \
-#     composer install --no-dev && \
-#     bin/console assets:install && \
-#     chmod -R 777 /var/www/var/
+# load fixuteres
+RUN bin/console doctrine:schema:update --force && bin/console doctrine:fixtures:load -q

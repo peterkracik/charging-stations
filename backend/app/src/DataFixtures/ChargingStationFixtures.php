@@ -4,8 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\ChargingStation;
 use App\Entity\Schedule;
+use App\Entity\StationScheduleException;
 use App\Entity\Store;
+use App\Entity\StoreScheduleException;
 use App\Entity\Tenant;
+use App\Entity\TenantScheduleException;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -19,6 +23,13 @@ class ChargingStationFixtures extends Fixture
 
         $tenant2 = new Tenant();
         $tenant2->setName('Kaufland');
+
+        $exception = new TenantScheduleException();
+        $exception->setStart(new DateTime("2020-09-01 00:00"));
+        $exception->setEnd(new DateTime("2020-09-15 00:00"));
+        $exception->setOpen(false);
+        $manager->persist($exception);
+        $tenant2->addScheduleException($exception);
         $manager->persist($tenant2);
 
         /**
@@ -50,6 +61,13 @@ class ChargingStationFixtures extends Fixture
         $schedule->setSaturday('08:00-16:00');
         $schedule->setSunday('09:00-12:30');
         $store2->setSchedule($schedule);
+
+        $exception2 = new StoreScheduleException();
+        $exception2->setStart(new DateTime("2020-09-01 00:00"));
+        $exception2->setEnd(new DateTime("2020-09-09 00:00"));
+        $exception2->setOpen(false);
+        $manager->persist($exception2);
+        $store2->addScheduleException($exception2);
         $manager->persist($store2);
 
         /**
@@ -90,6 +108,12 @@ class ChargingStationFixtures extends Fixture
         $station1->setName("Lidl Salzburg - Charging station for clients");
         $station1->setStore($store1);
         // default schedule
+        $exception3 = new StationScheduleException();
+        $exception3->setStart(new DateTime("2020-09-07 10:00"));
+        $exception3->setEnd(new DateTime("2020-09-07 19:00"));
+        $exception3->setOpen(false);
+        $manager->persist($exception3);
+        $station1->addScheduleException($exception3);
         $manager->persist($station1);
 
         $station2 = new ChargingStation();

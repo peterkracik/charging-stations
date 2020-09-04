@@ -134,7 +134,7 @@ class ChargingStation implements ClientInterface, HasScheduleInterface, HasSched
 
     public function getSchedule(): ?Schedule
     {
-        return $this->schedule;
+        return $this->schedule ?? new Schedule(); // if no scheduled hasn't been set
     }
 
     public function setSchedule(?Schedule $schedule): self

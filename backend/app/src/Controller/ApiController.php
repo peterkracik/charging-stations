@@ -50,8 +50,9 @@ class ApiController extends AbstractController
      * Get station by id
      * @Route("/stations/{id}", name="charging_station_detail", methods={"GET"})
      */
-    public function getStation(ChargingStation $station)
+    public function getStation(ChargingStation $station = null)
     {
+        if (!$station) return new JsonResponse("{}", 404, [], true);
 
         $json = $this->serializer->serialize(
             $station,
@@ -65,8 +66,10 @@ class ApiController extends AbstractController
     /**
      * @Route("/stations/{id}/open", name="charging_station_open", methods={"GET"})
      */
-    public function getStationStatus(Request $request, ChargingStation $station)
+    public function getStationStatus(Request $request, ChargingStation $station = null)
     {
+        if (!$station) return new JsonResponse("{}", 404, [], true);
+
         $body = json_decode($request->getContent(), true); // get body of the api request
         $date = new DateTime($body['date'] ?? null);       // create date object
         $isOpen = $this->chargingStationService->isOpen($station, $date);      // verify if station is open
@@ -86,8 +89,10 @@ class ApiController extends AbstractController
     /**
      * @Route("/stations/{id}/status_change", name="charging_station_status_change", methods={"GET"})
      */
-    public function getStationNextStatusChange(Request $request, ChargingStation $station)
+    public function getStationNextStatusChange(Request $request, ChargingStation $station = null)
     {
+        if (!$station) return new JsonResponse("{}", 404, [], true);
+
         $body = json_decode($request->getContent(), true); // get body of the api request
         $date = new DateTime($body['date'] ?? null);       // create date object
         $changeDate = $this->chargingStationService->searchStatusChange($station, $date);      // verify if station is open
