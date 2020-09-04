@@ -64,7 +64,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/stations/{id}/open", name="charging_station_open", methods={"GET"})
+     * @Route("/stations/{id}/open", name="charging_station_open", methods={"GET","POST"})
      */
     public function getStationStatus(Request $request, ChargingStation $station = null)
     {
@@ -87,7 +87,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/stations/{id}/status_change", name="charging_station_status_change", methods={"GET"})
+     * @Route("/stations/{id}/status_change", name="charging_station_status_change", methods={"GET","POST"})
      */
     public function getStationNextStatusChange(Request $request, ChargingStation $station = null)
     {
@@ -98,7 +98,7 @@ class ApiController extends AbstractController
         $changeDate = $this->chargingStationService->searchStatusChange($station, $date);      // verify if station is open
 
         $data = [
-            "date" => $changeDate->format('c'),
+            "date" => $changeDate->format('Y-m-d h:i'),
         ];
 
         $json = $this->serializer->serialize(

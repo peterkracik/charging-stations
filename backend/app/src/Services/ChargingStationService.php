@@ -49,7 +49,7 @@ class ChargingStationService
      */
     public function searchStatusChange(ChargingStation $station, DateTime $date): DateTime
     {
-        $date = new \DateTime($date->format('Y-m-d h:m')); // round date to minutes
+        $date = new \DateTime($date->format('Y-m-d h:i')); // round date to minutes
 
         $schedule = $this->getScheduleForDay($station, $date); // create schedule for the current day
         $nextChange = $this->findNextChange($schedule, $date); // search for next change in the day schedule
