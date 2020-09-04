@@ -13,7 +13,7 @@ get a charging station's next status change for current or selected time: https:
 
 ### select a custom date
 send the request with body containing date
-```
+```json
 {
     "date": "2020-09-04 7:30:00"
 }
